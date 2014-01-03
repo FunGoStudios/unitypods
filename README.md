@@ -1,4 +1,6 @@
+Master:
 [![Build Status master](https://travis-ci.org/FunGoStudios/unitypods.png?branch=master)](https://travis-ci.org/FunGoStudios/unitypods)
+Develop:
 [![Build Status develop](https://travis-ci.org/FunGoStudios/unitypods.png?branch=develop)](https://travis-ci.org/FunGoStudios/unitypods)
 # Unitypods
 
