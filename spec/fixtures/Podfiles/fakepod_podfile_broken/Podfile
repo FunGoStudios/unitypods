@@ -1,0 +1,5 @@
+#broken when runned with --no-integrate
+#platform :ios, '6.0'
+
+pod 'FakePod', :path => '../../spec/fixtures/FakePod'
+

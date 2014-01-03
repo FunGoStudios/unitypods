@@ -75,8 +75,12 @@ def copy_files(fixture_project, test_subdir)
   return [project_original, project_copy]
 end
 
+def path_of_fixtures
+  File.join(ROOT,"spec/fixtures")
+end
+
 def path_of_fixture_project(fixture_project)
-  source = File.join(ROOT,"spec/fixtures", fixture_project)
+  source = File.join(path_of_fixtures, fixture_project)
   File.join(source, fixture_project + ".xcodeproj")
 end
 

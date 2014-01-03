@@ -7,7 +7,7 @@ describe 'UnitypodsCommand' do
     context 'when the buildprojectdir does not exist' do
       let(:commnandline_args) { [] << "install" << "-p" << path_of_fixture_podfile_for_dir("basic") << "-b" << "this_dir_does_not_exist" }
       it { expect do
-        UnitypodsCommand.start(commnandline_args)
+        Unitypods::UnitypodsCommand.start(commnandline_args)
       end.to raise_error("buildprojectdir does not exist")
       }
     end
@@ -17,8 +17,19 @@ describe 'UnitypodsCommand' do
         create_temp_random_dir do |tmp_dir|
           commnandline_args = [] << "install" << "-p" << "this_path_does_not_exist" << "-b" << tmp_dir
           expect do
-            UnitypodsCommand.start(commnandline_args)
+            Unitypods::UnitypodsCommand.start(commnandline_args)
           end.to raise_error("podfile does not exist")
+        end
+      }
+    end
+
+    context 'when the podfile has errors' do
+      it {
+        create_temp_random_dir do |tmp_dir|
+          commnandline_args = [] << "install" << "-p" << path_of_fixture_podfile_for_dir("fakepod_podfile_broken") << "-b" << tmp_dir
+          expect do
+            Unitypods::UnitypodsCommand.start(commnandline_args)
+          end.to raise_error Unitypods::PodsError
         end
       }
     end
@@ -27,7 +38,7 @@ describe 'UnitypodsCommand' do
       it 'should copy the podfile into the buildprojectdir' do
         create_temp_random_dir do |tmp_dir|
           commnandline_args = [] << "install" << "-p" << path_of_fixture_podfile_for_dir("fakepod_podfile") << "-b" << tmp_dir
-          UnitypodsCommand.start(commnandline_args)
+          Unitypods::UnitypodsCommand.start(commnandline_args)
           expect(Pathname(File.join(tmp_dir, "Podfile")).exist?).to be_true
         end
       end
@@ -35,10 +46,23 @@ describe 'UnitypodsCommand' do
       it 'should invoke the pod install command in the buildprojectdir' do
         create_temp_random_dir do |tmp_dir|
           commnandline_args = [] << "install" << "-p" << path_of_fixture_podfile_for_dir("fakepod_podfile") << "-b" << tmp_dir
-          UnitypodsCommand.start(commnandline_args)
+          Unitypods::UnitypodsCommand.start(commnandline_args)
           expect(Pathname(File.join(tmp_dir, "Podfile.lock")).exist?).to be_true
         end
       end
-    end
+
+      context 'when the -i option is true' do
+        it 'should integrate the pods as subproject of ' do
+          create_temp_random_dir do |tmp_dir|
+            FileUtils.cp_r(File.join(path_of_fixtures,"Unity-iPhone"), tmp_dir)
+
+            commnandline_args = [] << "install" << "-i" << "-p" << path_of_fixture_podfile_for_dir("fakepod_podfile") << "-b" << tmp_dir
+            Unitypods::UnitypodsCommand.start(commnandline_args)
+            expect(Pathname(File.join(tmp_dir, "Podfile.lock")).exist?).to be_true
+          end
+        end
+      end
+
+      end
   end
 end

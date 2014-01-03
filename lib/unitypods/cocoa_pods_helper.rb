@@ -19,15 +19,13 @@ class CocoaPodsHelper
 
 
   #Add the setting_value if not present
-  def self.add_flag( project, target_name, build_configuration_name, setting_name, setting_value)
-    target = find_target_by_name(project, target_name)
+  def self.add_flag( target, build_configuration_name, setting_name, setting_value)
     bc = find_build_configurations_by_name(target, build_configuration_name)
     bc.build_settings[setting_name] = [] unless bc.build_settings.include?setting_name
     bc.build_settings[setting_name] << setting_value unless bc.build_settings[setting_name].include?(setting_value)
   end
 
-  def self.remove_flag( project, target_name, build_configuration_name, setting_name, setting_value)
-    target = find_target_by_name(project, target_name)
+  def self.remove_flag( target, build_configuration_name, setting_name, setting_value)
     bc = find_build_configurations_by_name(target, build_configuration_name)
     return unless bc.build_settings[setting_name]
     #TODO check for Array Hash or scalar values and remove them
