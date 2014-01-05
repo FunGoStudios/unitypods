@@ -39,6 +39,8 @@ module Unitypods
 
     def init
       #TODO
+      #TODO check if we are in a unity3d project
+
     end
 
     private
@@ -58,15 +60,9 @@ module Unitypods
     def run_pod_install
       FileUtils.cd(options[:buildprojectdir]) do # chdir
         cmd = "pod install --no-integrate"
-        Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
-          output = ""
-          while line = stdout.gets
-            output << line << "\n"
-            puts line
-          end
-          exit_status = wait_thr.value
-          raise Unitypods::PodsError.new("Failed #{cmd}: \n #{output}") unless exit_status.success?
-        end
+        output = `#{cmd} 2>&1`
+        puts output
+        raise Unitypods::PodsError.new("Failed #{cmd}: \n #{output}") unless $?.success?
       end # return to original directory
     end
 
