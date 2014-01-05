@@ -92,8 +92,8 @@ module Unitypods
       end
 
       %w(Debug Release).each do |build_configuration_name|
-        #TODO set the PROPER headers search path
-        CocoaPodsHelper::add_flag( unity_project_target, build_configuration_name, "HEADER_SEARCH_PATHS", "my_headers_search")
+        #add the recursive pods headers path
+        CocoaPodsHelper::add_flag( unity_project_target, build_configuration_name, "HEADER_SEARCH_PATHS", "$(SRCROOT)/Pods/Headers/**")
       end
 
       unity_project.save(@unity_project_path)
