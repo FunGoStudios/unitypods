@@ -74,7 +74,7 @@ module Unitypods
       unity_project = Xcodeproj::Project.open(@unity_project_path)
 
       #Create the subproject Pod file reference
-      pod_proj_file_ref = Xcodeproj::Project::Object::FileReferencesFactory::new_reference(unity_project.main_group, "../Pods/Pods.xcodeproj", :group)
+      pod_proj_file_ref = Xcodeproj::Project::Object::FileReferencesFactory::new_reference(unity_project.main_group, "Pods/Pods.xcodeproj", :group)
       pod_proj_file_ref.name="Pods.xcodeproj"
       pod_proj_file_ref.last_known_file_type="wrapper.pb-project"
 

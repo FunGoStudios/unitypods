@@ -54,7 +54,7 @@ describe 'UnitypodsCommand' do
       context 'when the -i option is true' do
         it 'should integrate the pods as subproject of ' do
           create_temp_random_dir do |tmp_dir|
-            FileUtils.cp_r(File.join(path_of_fixtures,"Unity-iPhone"), tmp_dir)
+            FileUtils.cp_r(File.join(path_of_fixtures,"Unity-iPhone","."), tmp_dir)
 
             commnandline_args = [] << "install" << "-i" << "-p" << path_of_fixture_podfile_for_dir("fakepod_podfile") << "-b" << tmp_dir
             Unitypods::UnitypodsCommand.start(commnandline_args)
