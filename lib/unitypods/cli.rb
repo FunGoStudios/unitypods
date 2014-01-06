@@ -96,7 +96,20 @@ module Unitypods
         CocoaPodsHelper::add_flag( unity_project_target, build_configuration_name, "HEADER_SEARCH_PATHS", "$(SRCROOT)/Pods/Headers/**")
       end
 
+      set_xcconfig(unity_project)
+
       unity_project.save(@unity_project_path)
+    end
+
+    def set_xcconfig(unity_project)
+      xcconfig_relative_path = "Pods/Pods.xcconfig"
+      xcconfig = unity_project.files.select { |f| f.path == xcconfig_relative_path }.first ||
+          unity_project.new_file(xcconfig_relative_path)
+      unity_project_target = Unity3dHelper::find_default_unity_target(unity_project)
+
+      Unity3dHelper::find_default_unity_target(unity_project).build_configurations.each do |config|
+        config.base_configuration_reference = xcconfig
+      end
     end
   end
 end

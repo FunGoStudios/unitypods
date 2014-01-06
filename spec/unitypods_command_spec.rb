@@ -58,7 +58,16 @@ describe 'UnitypodsCommand' do
 
             commnandline_args = [] << "install" << "-i" << "-p" << path_of_fixture_podfile_for_dir("fakepod_podfile") << "-b" << tmp_dir
             Unitypods::UnitypodsCommand.start(commnandline_args)
+
+            unity_project = Xcodeproj::Project.open( Unity3dHelper::default_unity_project_path(tmp_dir) )
             expect(Pathname(File.join(tmp_dir, "Podfile.lock")).exist?).to be_true
+
+            #xcconfig
+            xcconfig = unity_project.files.find { |f| f.path == "Pods/Pods.xcconfig"}
+            expect(xcconfig).to_not be_nil
+            Unity3dHelper::find_default_unity_target(unity_project).build_configurations.each do |config|
+              config.base_configuration_reference.should == xcconfig
+            end
           end
         end
       end
