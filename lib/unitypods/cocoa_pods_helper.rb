@@ -30,4 +30,9 @@ class CocoaPodsHelper
     return unless bc.build_settings[setting_name]
     #TODO check for Array Hash or scalar values and remove them
   end
+
+  # Create an empty Podfile
+  def self.create_podfile!
+    File.open(File.join(Dir.pwd, 'Podfile'), 'w') {}
+  end
 end
