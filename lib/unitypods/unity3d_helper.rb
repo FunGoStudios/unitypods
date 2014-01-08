@@ -1,4 +1,5 @@
 require 'unitypods/cocoa_pods_helper'
+require 'find'
 
 class Unity3dHelper
   # Unity
@@ -29,7 +30,17 @@ class Unity3dHelper
     result
   end
 
-  # @return true or false if current is an unity project or not
+  #@return an array with all the occurences of DEFAULT_POSTPROCESS_FILE
+  def self.find_all_default_postprocess_files(dir)
+    file_paths = []
+    escaped_dir = dir[-1] == File::SEPARATOR ? dir : File.join(dir, File::SEPARATOR)
+    Find.find(escaped_dir) do |path|
+      file_paths << path if File.basename(path) == DEFAULT_POSTPROCESS_FILE
+    end
+    file_paths
+  end
+
+    # @return true or false if current is an unity project or not
   def self.is_a_unity_assets_subdir?(dir)
     return !find_the_unity_assets_root_dir(dir).nil?
   end

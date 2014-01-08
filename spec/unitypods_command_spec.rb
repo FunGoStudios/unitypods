@@ -66,7 +66,7 @@ describe 'UnitypodsCommand' do
             xcconfig = unity_project.files.find { |f| f.path == "Pods/Pods.xcconfig"}
             expect(xcconfig).to_not be_nil
             Unity3dHelper::find_default_unity_target(unity_project).build_configurations.each do |config|
-              config.base_configuration_reference.should == xcconfig
+              expect(config.base_configuration_reference.should).to eq(xcconfig)
             end
           end
         end
@@ -107,6 +107,7 @@ describe 'UnitypodsCommand' do
 
       it 'should fail if there is another DEFAULT_POSTPROCESS_FILE in some Assets subdir' do
         pending
+        #use Find http://ruby-doc.org/stdlib-2.1.0/libdoc/find/rdoc/Find.html
       end
     end
   end

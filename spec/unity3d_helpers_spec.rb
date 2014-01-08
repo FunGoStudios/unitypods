@@ -46,4 +46,21 @@ describe 'Unity3dHelper' do
     end
   end
 
+  describe 'find_all_default_postprocess_files' do
+    it 'should return an array the path of the all the file occurencies' do
+      create_temp_random_dir do |tmp_dir|
+        fake_foo_dir_a = File.join(tmp_dir, Unity3dHelper::DEFAULT_UNITY_ASSETS_PATH, "a")
+        fake_foo_dir_b = File.join(tmp_dir, Unity3dHelper::DEFAULT_UNITY_ASSETS_PATH, "b")
+
+        FileUtils.mkpath(fake_foo_dir_a)
+        FileUtils.mkpath(fake_foo_dir_b)
+
+        FileUtils.touch(File.join(fake_foo_dir_a, Unity3dHelper::DEFAULT_POSTPROCESS_FILE))
+        FileUtils.touch(File.join(fake_foo_dir_b, Unity3dHelper::DEFAULT_POSTPROCESS_FILE))
+        FileUtils.touch(File.join(fake_foo_dir_b, "fake"))
+
+        expect(Unity3dHelper::find_all_default_postprocess_files(tmp_dir.to_s).size).to eq(2)
+      end
+    end
+  end
 end
