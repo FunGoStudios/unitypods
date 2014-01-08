@@ -42,7 +42,7 @@ module Unitypods
       puts '[+] Check if it\'s an Unity3d project...'
 
       unity_project = Unity3dHelper.is_a_unity_project?
-      raise Unitypods::PodsError.new('[-] No one unity project present here, check again and retry.') unless unity_project
+      raise Unitypods::PodsInitNoAssetDirError.new('[-] No one unity project present here, check again and retry.') unless unity_project
 
       puts '[+] Creating a new Unity3d project using a default PostProcess build script'
 

@@ -74,4 +74,40 @@ describe 'UnitypodsCommand' do
 
       end
   end
+
+  describe '#init' do
+    context 'when the init command is run outside the Unity3D Assets dir' do
+      it 'should fail' do
+        create_temp_random_dir do |tmp_dir|
+          fixture_dir = File.join(path_of_fixtures,"FakeUnityProject")
+          FileUtils.cd(tmp_dir) do
+            commnandline_args = [] << "init"
+            expect do
+              Unitypods::UnitypodsCommand.start(commnandline_args)
+            end.to raise_error(Unitypods::PodsInitNoAssetDirError)
+
+          end
+          Pathname(File.join(tmp_dir, Unity3dHelper::DEFAULT_POSTPROCESS_PATH)).should_not exist
+        end
+      end
+    end
+
+    context 'when the init command is run inside the Unity3D Assets dir' do
+      it 'should create the DEFAULT_POSTPROCESS_FILE' do
+        create_temp_random_dir do |tmp_dir|
+          fixture_dir = File.join(path_of_fixtures,"FakeUnityProject")
+          FileUtils.cp_r(File.join(fixture_dir,"."), tmp_dir)
+          FileUtils.cd(File.join(tmp_dir, Unity3dHelper::DEFAULT_UNITY_ASSETS_PATH)) do
+            commnandline_args = [] << "init"
+            Unitypods::UnitypodsCommand.start(commnandline_args)
+          end
+          expect(Pathname(File.join(tmp_dir,Unity3dHelper::DEFAULT_UNITY_ASSETS_PATH, Unity3dHelper::DEFAULT_POSTPROCESS_PATH)).exist?).to be_true
+        end
+      end
+
+      it 'should fail if there is another DEFAULT_POSTPROCESS_FILE in some Assets subdir' do
+        pending
+      end
+    end
+  end
 end

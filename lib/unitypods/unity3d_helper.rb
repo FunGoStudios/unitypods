@@ -6,7 +6,7 @@ class Unity3dHelper
   DEFAULT_UNITY_ASSETS_PATH='Assets'.freeze
 
   # PostProcessBuild
-  DEFAULT_POSTPROCESS_FILE='PostProcessBuild.cs'.freeze
+  DEFAULT_POSTPROCESS_FILE='UnitypodsPostProcessBuild.cs'.freeze
   DEFAULT_POSTPROCESS_PATH='Editor'.freeze
 
   # @param pathToBuiltProject contains the project built by unity. Is provided by unity PostProcessBuildAttribute http://docs.unity3d.com/412/Documentation/ScriptReference/PostProcessBuildAttribute.html
@@ -22,7 +22,7 @@ class Unity3dHelper
 
   # @return true or false if current is an unity project or not
   def self.is_a_unity_project?
-    return File.directory?(File.join(Dir.pwd, '../', DEFAULT_UNITY_ASSETS_PATH)) || File.directory?(File.join(Dir.pwd, DEFAULT_UNITY_ASSETS_PATH)) 
+    return Dir.pwd.split(File::SEPARATOR).include? DEFAULT_UNITY_ASSETS_PATH
   end
 
   # Create default PostProcessBuild file
