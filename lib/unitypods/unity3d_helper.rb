@@ -20,9 +20,18 @@ class Unity3dHelper
     CocoaPodsHelper::find_target_by_name(project, DEFAULT_UNITY_TARGET_NAME)
   end
 
+  # @return the Unity Asset dir if the pdw dir is a sub dir of Unity3D Assets, nil otherwise
+  def self.find_the_unity_assets_root_dir(dir)
+    result = nil
+    Pathname(dir).descend do |d|
+      result = d.to_s if d.split.last.to_s == DEFAULT_UNITY_ASSETS_PATH
+    end
+    result
+  end
+
   # @return true or false if current is an unity project or not
-  def self.is_a_unity_project?
-    return Dir.pwd.split(File::SEPARATOR).include? DEFAULT_UNITY_ASSETS_PATH
+  def self.is_a_unity_assets_subdir?(dir)
+    return !find_the_unity_assets_root_dir(dir).nil?
   end
 
   # Create default PostProcessBuild file
