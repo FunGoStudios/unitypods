@@ -44,6 +44,9 @@ module Unitypods
       unity_project = Unity3dHelper.is_a_unity_assets_subdir?(Dir.pwd)
       raise Unitypods::PodsInitNoAssetDirError.new('[-] No one unity project present here, check again and retry.') unless unity_project
 
+      postprocess_files = Unity3dHelper.find_all_default_postprocess_files(Unity3dHelper.find_the_unity_assets_root_dir(Dir.pwd))
+      raise PodsInitAlreadyInitialized.new("Unitypod is already added to this project here: #{postprocess_files.join(", ")}") if !postprocess_files.empty?
+
       puts '[+] Creating a new Unity3d project using a default PostProcess build script'
 
       postprocess_template = <<-EOF

@@ -4,4 +4,7 @@ module Unitypods
 
   class PodsInitNoAssetDirError< StandardError
   end
+
+  class PodsInitAlreadyInitialized< StandardError
+  end
 end
