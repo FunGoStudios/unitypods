@@ -8,7 +8,9 @@ class Unity3dHelper
 
   # PostProcessBuild
   DEFAULT_POSTPROCESS_FILE='UnitypodsPostProcessBuild.cs'.freeze
+  DEFAULT_UNITYWRAPPER_FILE='unitypod_wrapper'.freeze
   DEFAULT_POSTPROCESS_PATH='Editor'.freeze
+  DEFAULT_LOG_FILE='/tmp/'
 
   # @param pathToBuiltProject contains the project built by unity. Is provided by unity PostProcessBuildAttribute http://docs.unity3d.com/412/Documentation/ScriptReference/PostProcessBuildAttribute.html
   # @return the full project path
@@ -46,13 +48,88 @@ class Unity3dHelper
   end
 
   # Create default PostProcessBuild file
-  def self.create_default_postprocess(postprocess_template)
-    postprocess_path = File.join(Dir.pwd, DEFAULT_POSTPROCESS_PATH)
-    FileUtils.mkdir_p(postprocess_path) unless File.directory?(postprocess_path)
+  def self.create_default_postprocess
+    postprocess_template = <<-EOF
+using UnityEngine;
+using System.Collections;
+using System.IO;
+using System.Text;
+using UnityEditor;
+using UnityEditor.Callbacks;
+using System.Diagnostics;
 
-    postprocess_output = File.open(File.join(postprocess_path, DEFAULT_POSTPROCESS_FILE), 'w')
+public class PostprocessBuildPlayer : MonoBehaviour {
+  [PostProcessBuild(1257)]
+  public static void OnPostprocessBuild(BuildTarget target, string pathToBuild)
+  {
+#if UNITY_IPHONE
+    // sets up our process, the first argument is the command
+    // and the second holds the arguments passed to the command
+    string podfilePath = "<%= File.join(Dir.pwd, 'Podfile') %>";
+    string cmd = "<%= File.join(path, DEFAULT_UNITYWRAPPER_FILE) %>";
+    string args = "install " + "-i" + " -b " + pathToBuild + " -p " + podfilePath;
+
+    UnityEngine.Debug.Log("Run: " + cmd + " " + args);
+    ProcessStartInfo ps = new ProcessStartInfo (cmd, args);
+    ps.UseShellExecute = false;
+
+    // we need to redirect the standard output so we read it
+    // internally in out program
+    ps.RedirectStandardOutput = true;
+    ps.RedirectStandardError = true;
+
+    // starts the process
+    using (Process p = Process.Start (ps)) {
+
+      // we read the output to a string
+      string output = p.StandardOutput.ReadToEnd();
+      string outputError = p.StandardError.ReadToEnd();
+
+      // waits for the process to exit
+      // Must come *after* StandardOutput is "empty"
+      // so that we don't deadlock because the intermediate
+      // kernel pipe is full.
+      p.WaitForExit();
+      UnityEngine.Debug.Log("unitypod log: " + "<%= DEFAULT_LOG_FILE %>");
+
+      // finally output the string
+      UnityEngine.Debug.Log (output);
+      UnityEngine.Debug.Log (p.ExitCode);
+      if (p.ExitCode != 0) {
+          throw new System.InvalidOperationException("unitypod failed");
+      }
+    }
+
+#endif
+  }
+}
+    EOF
+
+    path = File.join(Dir.pwd, DEFAULT_POSTPROCESS_PATH)
+    FileUtils.mkdir_p(path) unless File.directory?(path)
+
+    postprocess_output = File.open(File.join(path, DEFAULT_POSTPROCESS_FILE), 'w')
     postprocess_output << ERB.new(postprocess_template).result(binding)
     postprocess_output.close
+  end
+
+  def self.create_default_unitypod_wrapper
+    log_file = "/tmp/unitypod_wrapper_log"
+
+    wrapper_template = <<-EOF
+#!/bin/bash
+echo "Start" > <%= log_file %>
+source ~/.rvm/scripts/rvm
+unitypod $@ 2>&1 1>><%= log_file %>
+    EOF
+
+    path = File.join(Dir.pwd, DEFAULT_POSTPROCESS_PATH)
+    FileUtils.mkdir_p(path) unless File.directory?(path)
+
+    postprocess_output = File.open(File.join(path, DEFAULT_UNITYWRAPPER_FILE), 'w')
+    postprocess_output << ERB.new(wrapper_template).result(binding)
+    postprocess_output.close
+    FileUtils.chmod "u+x", File.join(path, DEFAULT_UNITYWRAPPER_FILE)
   end
 
 end

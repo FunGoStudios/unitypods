@@ -49,62 +49,10 @@ module Unitypods
 
       puts '[+] Creating a new Unity3d project using a default PostProcess build script'
 
-      postprocess_template = <<-EOF
-using UnityEngine;
-using System.Collections;
-using System.IO;
-using System.Text;
-using UnityEditor;
-using UnityEditor.Callbacks;
-using System.Diagnostics;
+      #TODO this wrapper support only rvm default ruby
+      Unity3dHelper.create_default_postprocess
+      Unity3dHelper.create_default_unitypod_wrapper
 
-public class PostprocessBuildPlayer : MonoBehaviour {
-  [PostProcessBuild(1257)]
-  public static void OnPostprocessBuild(BuildTarget target, string pathToBuild)
-  {
-#if UNITY_IPHONE
-    // sets up our process, the first argument is the command
-    // and the second holds the arguments passed to the command
-    string podfilePath = "<%= File.join(Dir.pwd, 'Podfile') %>"
-    string cmd = "unitypod";
-    string args = "install " + "-i" + " -b " + pathToBuild + " -p " + podfilePath;
-
-    UnityEngine.Debug.Log("Run: " + cmd + " " + args);
-    ProcessStartInfo ps = new ProcessStartInfo (cmd, args);
-    ps.UseShellExecute = false;
-
-    // we need to redirect the standard output so we read it
-    // internally in out program
-    ps.RedirectStandardOutput = true;
-    ps.RedirectStandardError = true;
-
-    // starts the process
-    using (Process p = Process.Start (ps)) {
-
-      // we read the output to a string
-      string output = p.StandardOutput.ReadToEnd();
-      string outputError = p.StandardError.ReadToEnd();
-
-      // waits for the process to exit
-      // Must come *after* StandardOutput is "empty"
-      // so that we don't deadlock because the intermediate
-      // kernel pipe is full.
-      p.WaitForExit ();
-
-      // finally output the string
-      UnityEngine.Debug.Log (output);
-      UnityEngine.Debug.Log (p.ExitCode);
-      if (p.ExitCode != 0) {
-          throw new System.InvalidOperationException("unitypod failed");
-      }
-    }
-
-#endif
-  }
-}
-      EOF
-
-      Unity3dHelper.create_default_postprocess(postprocess_template)
 
       puts "[+] Creating a default Podfile: #{File.join(Dir.pwd, 'Podfile')}"
       CocoaPodsHelper.create_podfile!
