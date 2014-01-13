@@ -10,7 +10,7 @@ class Unity3dHelper
   DEFAULT_POSTPROCESS_FILE='UnitypodsPostProcessBuild.cs'.freeze
   DEFAULT_UNITYWRAPPER_FILE='unitypod_wrapper'.freeze
   DEFAULT_POSTPROCESS_PATH='Editor'.freeze
-  DEFAULT_LOG_FILE='/tmp/'
+  DEFAULT_LOG_FILE='/tmp/unitypod.log'
 
   # @param pathToBuiltProject contains the project built by unity. Is provided by unity PostProcessBuildAttribute http://docs.unity3d.com/412/Documentation/ScriptReference/PostProcessBuildAttribute.html
   # @return the full project path
@@ -96,7 +96,7 @@ public class PostprocessBuildPlayer : MonoBehaviour {
       UnityEngine.Debug.Log (output);
       UnityEngine.Debug.Log (p.ExitCode);
       if (p.ExitCode != 0) {
-          throw new System.InvalidOperationException("unitypod failed");
+          throw new System.InvalidOperationException("ERROR: " + "unitypod log: " + "<%= DEFAULT_LOG_FILE %>" );
       }
     }
 
