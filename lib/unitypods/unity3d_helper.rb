@@ -114,13 +114,12 @@ public class PostprocessBuildPlayer : MonoBehaviour {
   end
 
   def self.create_default_unitypod_wrapper
-    log_file = "/tmp/unitypod_wrapper_log"
-
     wrapper_template = <<-EOF
 #!/bin/bash
-echo "Start" > <%= log_file %>
+export LC_ALL="en_US.UTF-8"
+echo "Start" > <%= DEFAULT_LOG_FILE %>
 source ~/.rvm/scripts/rvm
-unitypod $@ 2>&1 1>><%= log_file %>
+unitypod $@ 2>&1 1>><%= DEFAULT_LOG_FILE %>
     EOF
 
     path = File.join(Dir.pwd, DEFAULT_POSTPROCESS_PATH)
